@@ -56,7 +56,7 @@ const FOLLOW_POINTS = 10;
 const DEBUG = false;
 
 /**
-*   Libraries
+* Libraries
 */
 
 require_once('lib/Phirehose.php');
@@ -69,7 +69,7 @@ if (DEBUG) {
 }
 
 /**
-*   Classes;
+* Classes;
 */
 
 require_once('class/Quiz.php');

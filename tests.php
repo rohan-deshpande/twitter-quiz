@@ -6,7 +6,7 @@ $reply_test =
     'in_reply_to_status_id_str' => '1',
     'in_reply_to_status_id' => 1,
     'created_at' => 'Tue Feb 3 03:05:50 +0000 2015',
-    'user'  =>  ['screen_name' => 'twitter-quiz' , 'id_str' => '1'],
+    'user'  =>  ['screen_name' => 'twitter-quiz', 'id_str' => '1'],
     'text'  =>  'twitter-quiz'
 ];
 

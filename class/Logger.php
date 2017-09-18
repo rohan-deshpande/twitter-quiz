@@ -3,15 +3,13 @@
 /**
  * A simple logger to log data to the database
  *
- * @author     Rohan Deshpande <rohan@creativelifeform.com>
- * @version    0.0.1
+ * @author Rohan Deshpande <rohan@creativelifeform.com>
  */
-
 class Logger
 {
-    public static function log($db , $message)
+    public static function log($db, $message)
     {
-        $db->insert('log' , [
+        $db->insert('log', [
             'datetime'  =>  date("Y-m-d H:i:s"),
             'message'   =>  $message
         ]);

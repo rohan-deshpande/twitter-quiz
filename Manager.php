@@ -17,11 +17,10 @@ class Manager
     protected $searcher;
 
     /**
-    *   -- CONSTRUCTOR --
-    *   Sets up various properties for this class and instantiates an Updater and Awarder;
-    *   @return void;
+    * -- CONSTRUCTOR --
+    * Sets up various properties for this class and instantiates an Updater and Awarder;
+    * @return void
     */
-
     public function __construct()
     {
         $this->db = new Medoo([
@@ -33,27 +32,27 @@ class Manager
             'password'      => DB_PASS
         ]);
 
-        $this->start_params = ['status' => false , 'media' => false];
-        $this->end_params = ['status' => false , 'media' => false];
+        $this->start_params = ['status' => false, 'media' => false];
+        $this->end_params = ['status' => false, 'media' => false];
         $this->time = time();
-        $this->start_time = strtotime($this->db->get('startend' , 'start_time' , ['id' => 1]));
-        $this->end_time = strtotime($this->db->get('startend' , 'end_time' , ['id' => 1]));
-        $this->running = (boolean)$this->db->get('state' , 'running' , ['id' => 1]);
+        $this->start_time = strtotime($this->db->get('startend', 'start_time', ['id' => 1]));
+        $this->end_time = strtotime($this->db->get('startend', 'end_time', ['id' => 1]));
+        $this->running = (boolean)$this->db->get('state', 'running', ['id' => 1]);
         $this->updater = new Updater();
         $this->awarder = new Awarder($this->db);
         $this->searcher = new Searcher();
     }
 
     /**
-    *   Sets the start end end parameters for the manager;
-    *   These parameters are passed to the Updater in order for status updates to be tweeted via the app;
-    *   @return {false} if no questions are found;
-    *   @return {true} if questions are found;
+    * Sets the start end end parameters for the manager;
+    * These parameters are passed to the Updater in order for status updates to be tweeted via the app;
+    * @return {false} if no questions are found;
+    * @return {true} if questions are found;
     */
 
     protected function setParameters()
     {
-        $first = $this->db->select( 'questions' , ['question' , 'image'] , ['AND' => ['active' => 1 , 'question_order' => 0]] );
+        $first = $this->db->select( 'questions', ['question', 'image'], ['AND' => ['active' => 1, 'question_order' => 0]] );
 
         if (!is_array($first)) return false;
 
@@ -74,34 +73,34 @@ class Manager
     }
 
     /**
-    *   Manages turning the quiz on and off;
-    *   Runs various methods during each condition;
-    *   @return void;
+    * Manages turning the quiz on and off.
+    * Runs various methods during each condition.
+    *
+    * @return void
     */
-
     public function manage()
     {
         if (!$this->setParameters()) return;
 
-        if (!$this->running) 
+        if (!$this->running)
         {
             if ($this->time >= $this->start_time && $this->time < $this->end_time) {
-                Logger::log($this->db , LOG_QUIZ_START);
+                Logger::log($this->db, LOG_QUIZ_START);
                 Logger::output(LOG_QUIZ_START);
-                $this->db->update( 'state' , ['running' => 1] , ['id' => 1] );
+                $this->db->update( 'state', ['running' => 1], ['id' => 1] );
                 $code = $this->updater->Tweet($this->start_params);
             }
         }
         else
         {
             if ($this->time >= $this->end_time) {
-                Logger::log($this->db , LOG_QUIZ_END);
+                Logger::log($this->db, LOG_QUIZ_END);
                 Logger::output(LOG_QUIZ_END);
-                $this->db->update( 'state' , ['running' => 0] , ['id' => 1] );
+                $this->db->update( 'state', ['running' => 0], ['id' => 1] );
                 $code = $this->updater->Tweet($this->end_params);
                 $this->awarder->calculateAwards();
             } else {
-                Logger::log($this->db , LOG_QUIZ_RUNNING);
+                Logger::log($this->db, LOG_QUIZ_RUNNING);
                 $this->searcher->setup();
                 $this->searcher->search();
             }
@@ -113,4 +112,3 @@ class Manager
 $manager = new Manager();
 
 $manager->manage();
-
